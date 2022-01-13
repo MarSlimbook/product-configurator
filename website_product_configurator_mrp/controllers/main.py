@@ -1,6 +1,5 @@
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import http
 from odoo.http import request
+from odoo import http
 
 from odoo.addons.website_product_configurator.controllers.main import (
     ProductConfigWebsiteSale,
@@ -12,7 +11,7 @@ class WebsiteProductConfigMrp(ProductConfigWebsiteSale):
         ["/shop/cart/update"],
         type="http",
         auth="public",
-        methods=["POST"],
+        methods=["GET", "POST"],
         website=True,
         csrf=False,
     )
@@ -25,15 +24,18 @@ class WebsiteProductConfigMrp(ProductConfigWebsiteSale):
             )
             if not attr_products:
                 return super(WebsiteProductConfigMrp, self).cart_update(
-                    product_id=product_id, add_qty=add_qty, set_qty=set_qty, **kw
+                    product_id=product_id,
+                    add_qty=add_qty, set_qty=set_qty, **kw
                 )
 
             for product_id in attr_products:
                 res = super(ProductConfigWebsiteSale, self).cart_update(
-                    product_id=product_id, add_qty=add_qty, set_qty=set_qty, **kw
+                    product_id=product_id,
+                    add_qty=add_qty, set_qty=set_qty, **kw
                 )
             return res
         else:
             return super(WebsiteProductConfigMrp, self).cart_update(
-                product_id=product_id, add_qty=add_qty, set_qty=set_qty, **kw
+                product_id=product_id,
+                add_qty=add_qty, set_qty=set_qty, **kw
             )

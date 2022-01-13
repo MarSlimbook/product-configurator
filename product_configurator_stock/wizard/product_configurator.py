@@ -1,5 +1,3 @@
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
 from odoo import fields, models
 
 
@@ -15,11 +13,13 @@ class ProductConfiguratorPicking(models.TransientModel):
     stock_move_id = fields.Many2one(comodel_name="stock.move", readonly=True)
 
     def _get_order_line_vals(self, product_id):
-        """Hook to allow custom line values to be put on the newly
+        """ Hook to allow custom line values to be put on the newly
         created or edited lines."""
 
         product = self.env["product.product"].browse(product_id)
-        product = product.with_context(lang=self.env.user.lang)
+        product = product.with_context(
+            lang=self.env.user.lang
+        )
         line_vals = {
             "product_id": product_id,
             "picking_id": self.picking_id.id,

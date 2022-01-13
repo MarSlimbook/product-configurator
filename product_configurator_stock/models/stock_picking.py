@@ -1,10 +1,12 @@
-from odoo import fields, models
+from odoo import models, fields
 
 
 class PickingType(models.Model):
     _inherit = "stock.picking.type"
 
-    allow_configuration = fields.Boolean(string="Allow configuration", default=False)
+    allow_configuration = fields.Boolean(
+        string="Allow configuration", default=False
+    )
 
 
 class Picking(models.Model):

@@ -1,6 +1,6 @@
 from ast import literal_eval
 
-from odoo import _, api, fields, models
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 
@@ -64,6 +64,7 @@ class ProductAttribute(models.Model):
     custom_type = fields.Selection(
         selection=CUSTOM_TYPES,
         string="Field Type",
+        size=64,
         help="The type of the custom field generated in the frontend",
     )
     description = fields.Text(string="Description", translate=True)
@@ -94,7 +95,10 @@ class ProductAttribute(models.Model):
     def check_searchable_field(self):
         for attribute in self:
             nosearch_fields = attribute._get_nosearch_fields()
-            if attribute.custom_type in nosearch_fields and attribute.search_ok:
+            if (
+                attribute.custom_type in nosearch_fields
+                and attribute.search_ok
+            ):
                 raise ValidationError(
                     _(
                         "Selected custom field type '%s' is not searchable"
@@ -103,7 +107,7 @@ class ProductAttribute(models.Model):
                 )
 
     def validate_custom_val(self, val):
-        """Pass in a desired custom value and ensure it is valid.
+        """ Pass in a desired custom value and ensure it is valid.
         Probaly should check type, etc, but let's assume fine for the moment.
         """
         self.ensure_one()
@@ -171,7 +175,9 @@ class ProductAttributeLine(models.Model):
     custom = fields.Boolean(
         string="Custom", help="Allow custom values for this attribute?"
     )
-    required = fields.Boolean(string="Required", help="Is this attribute required?")
+    required = fields.Boolean(
+        string="Required", help="Is this attribute required?"
+    )
     multi = fields.Boolean(
         string="Multi",
         help="Allow selection of multiple values for this attribute?",
@@ -295,7 +301,9 @@ class ProductAttributeValue(models.Model):
             return res
         product_template_id = self.env.context.get("active_id", False)
 
-        price_precision = self.env["decimal.precision"].precision_get("Product Price")
+        price_precision = self.env["decimal.precision"].precision_get(
+            "Product Price"
+        )
         extra_prices = self.get_attribute_value_extra_prices(
             product_tmpl_id=product_template_id, pt_attr_value_ids=self
         )
@@ -373,7 +381,9 @@ class ProductAttributePrice(models.Model):
     # Leverage product.template.attribute.value to compute the extra weight
     # each attribute adds
 
-    weight_extra = fields.Float(string="Attribute Weight Extra", digits="Stock Weight")
+    weight_extra = fields.Float(
+        string="Attribute Weight Extra", digits="Stock Weight"
+    )
 
 
 class ProductAttributeValueLine(models.Model):

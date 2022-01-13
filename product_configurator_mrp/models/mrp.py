@@ -1,6 +1,3 @@
-# Copyright (C) 2021 Open Source Integrators
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
 from odoo import fields, models
 
 
@@ -35,7 +32,7 @@ class MrpProduction(models.Model):
         return configurator_obj.with_context(ctx).get_wizard_action()
 
     def reconfigure_product(self):
-        """Creates and launches a product configurator wizard with a linked
+        """ Creates and launches a product configurator wizard with a linked
         template and variant in order to re-configure a existing product. It is
         esetially a shortcut to pre-fill configuration data of a variant"""
         wizard_model = "product.configurator.mrp"
@@ -59,6 +56,24 @@ class MrpBom(models.Model):
 
 class MrpBomLine(models.Model):
     _inherit = "mrp.bom.line"
+
+    def _skip_bom_line(self, product):
+        """ Control if a BoM line should be produce, can be inherited for add
+        custom control. It currently checks that all variant values are in the
+        product. """
+        if not self.bom_id.config_ok:
+            return super(MrpBomLine, self)._skip_bom_line(product=product)
+        if not self.config_set_id.configuration_ids:
+            return False
+        product_value_ids = set(
+            product.product_template_attribute_value_ids.mapped(
+                "product_attribute_value_id"
+            ).ids
+        )
+        for config in self.config_set_id.configuration_ids:
+            if len(set(config.value_ids.ids) - product_value_ids) == 0:
+                return False
+        return True
 
     config_set_id = fields.Many2one(
         comodel_name="mrp.bom.line.configuration.set",

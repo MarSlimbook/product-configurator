@@ -1,6 +1,3 @@
-# Copyright (C) 2021 Open Source Integrators
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
 from odoo import api, fields, models
 
 
@@ -26,7 +23,7 @@ class SaleOrderLine(models.Model):
         comodel_name="product.config.session.custom.value",
         inverse_name="cfg_session_id",
         related="config_session_id.custom_value_ids",
-        string="Configurator Custom Values",
+        string="Custom Values",
     )
     config_ok = fields.Boolean(
         related="product_id.config_ok", string="Configurable", readonly=True
@@ -36,7 +33,7 @@ class SaleOrderLine(models.Model):
     )
 
     def reconfigure_product(self):
-        """Creates and launches a product configurator wizard with a linked
+        """ Creates and launches a product configurator wizard with a linked
         template and variant in order to re-configure a existing product. It is
         esetially a shortcut to pre-fill configuration data of a variant"""
         wizard_model = "product.configurator.sale"

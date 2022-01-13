@@ -1,6 +1,3 @@
-# Copyright (C) 2021 Open Source Integrators
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
 from odoo import fields, models
 
 
@@ -10,11 +7,15 @@ class ProductConfiguratorSale(models.TransientModel):
     _inherit = "product.configurator"
     _description = "Product Configurator Sale"
 
-    order_id = fields.Many2one(comodel_name="sale.order", required=True, readonly=True)
-    order_line_id = fields.Many2one(comodel_name="sale.order.line", readonly=True)
+    order_id = fields.Many2one(
+        comodel_name="sale.order", required=True, readonly=True
+    )
+    order_line_id = fields.Many2one(
+        comodel_name="sale.order.line", readonly=True
+    )
 
     def _get_order_line_vals(self, product_id):
-        """Hook to allow custom line values to be put on the newly
+        """ Hook to allow custom line values to be put on the newly
         created or edited lines."""
         product = self.env["product.product"].browse(product_id)
         line_vals = {"product_id": product_id, "order_id": self.order_id.id}
@@ -23,8 +24,8 @@ class ProductConfiguratorSale(models.TransientModel):
         line_vals.update(
             {
                 "config_session_id": self.config_session_id.id,
+                "price_unit": self.config_session_id.price,
                 "name": product._get_mako_tmpl_name(),
-                "customer_lead": product.sale_delay,
             }
         )
         return line_vals

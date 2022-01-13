@@ -1,22 +1,16 @@
-# Copyright (C) 2021 Open Source Integrators
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "Product Configurator Sale",
-    "version": "14.0.1.1.2",
+    "version": "13.0.1.0.0",
     "category": "Generic Modules/Sale",
     "summary": "Product configuration interface modules for Sale",
-    "author": "Pledra, Odoo Community Association (OCA)",
+    "author": "Pledra",
     "license": "AGPL-3",
-    "website": "https://github.com/OCA/product-configurator",
+    "website": "http://www.pledra.com/",
     "depends": ["sale_management", "product_configurator"],
-    "data": [
-        "security/ir.model.access.csv",
-        "data/menu_product.xml",
-        "views/sale_view.xml",
-    ],
+    "data": ["data/menu_product.xml", "views/sale_view.xml"],
     "demo": ["demo/res_partner_demo.xml"],
+    "images": [],
+    "test": [],
     "installable": True,
     "auto_install": False,
-    "development_status": "Beta",
-    "maintainers": ["PCatinean"],
 }

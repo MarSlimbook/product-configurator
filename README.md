@@ -1,52 +1,54 @@
-[![Runbot Status](https://runbot.odoo-community.org/runbot/badge/flat//14.0.svg)](https://runbot.odoo-community.org/runbot/repo/github-com-oca-product-configurator-)
-[![Build Status](https://travis-ci.com/OCA/product-configurator.svg?branch=14.0)](https://travis-ci.com/OCA/product-configurator)
-[![codecov](https://codecov.io/gh/OCA/product-configurator/branch/14.0/graph/badge.svg)](https://codecov.io/gh/OCA/product-configurator)
-[![Translation Status](https://translation.odoo-community.org/widgets/product-configurator-14-0/-/svg-badge.svg)](https://translation.odoo-community.org/engage/product-configurator-14-0/?utm_source=widget)
+# Odoo Product Configurator
+Odoo modules enabling dynamic product configuration
 
-<!-- /!\ do not modify above this line -->
+The product configurator modules suite prevents automatic generation of variants in Odoo and provides on-demand generation through friendly user interfaces.
 
-# Product Configurator
+Upgrades & Roadmap
+------------------
+* Product configurator is now an app and has a root main menu.
 
-Advanced Product Configurator, based on the Pledra project,
-https://github.com/pledra/odoo-product-configurator.
+![Menu-Root](https://i.imgur.com/yvu0nDA.png)
+ 
+* Wizard is now integrated with product_configurator module (product_configurator_wizard removed).
+* Wizard is now a generic extensible object ( _inherit / _inherits ) which can create derivatives (sale, mrp, stock etc) configurators or adapt the base one.
 
-This repository supports Odoo versions 14.0 and later.
-For previous Odoo versions, please refer to the Pledra repository.
+![New-Wizard](https://i.imgur.com/oS0XfBo.png)
+* New configurator modules:
+	* product_configurator_purchase
+	* product_configurator_stock
+* Specify default values for configurable templates
 
-<!-- /!\ do not modify below this line -->
+![Default Values](https://i.imgur.com/wsZvoAJ.png)
 
-<!-- prettier-ignore-start -->
+* Configurations can now be made directly from the configurable template.
+* Sessions now store the configuration step you were in the last incomplete configuration (useful for long configuration processes).
+* MRP Wizard can offer subconfigurable products (nested configurable products & nested configuration sessions).
 
-[//]: # (addons)
+![Subconfiguration](https://i.imgur.com/NCJnOY9.png)
+* Quantities can now be specified inside the mrp configuration wizard.
+* Multiple session/configuration related methods moved from product.template to product.config.session (eases a lot of convoluted designs to obtain configuration data since the configuration session is the heart of any configuration option not the product.template).
+* Dynamic field value are now stored as class property (less overhead for obtaining the values).
+* Price computation can use the standard 
 
-Available addons
-----------------
-addon | version | maintainers | summary
---- | --- | --- | ---
-[product_configurator](product_configurator/) | 14.0.1.2.3 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | Base for product configuration interface modules
-[product_configurator_mrp](product_configurator_mrp/) | 14.0.1.2.2 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | BOM Support for configurable products
-[product_configurator_purchase](product_configurator_purchase/) | 14.0.1.0.0 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | Product configuration interface for Purchase
-[product_configurator_restriction_policy](product_configurator_restriction_policy/) | 14.0.1.0.0 |  | Adds a Restriction Policy for processing restrictions.
-[product_configurator_sale](product_configurator_sale/) | 14.0.1.1.2 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | Product configuration interface modules for Sale
-[product_configurator_sale_mrp](product_configurator_sale_mrp/) | 14.0.1.0.2 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | BOM Support for sales wizard
-[product_configurator_stock](product_configurator_stock/) | 14.0.1.0.0 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | Product configuration interface module for Stock
-[website_product_configurator](website_product_configurator/) | 14.0.1.1.1 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | Configure products in e-shop
-[website_product_configurator_mrp](website_product_configurator_mrp/) | 14.0.1.0.0 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | Website integration of MRP
 
-[//]: # (end addons)
+# Credits
 
-<!-- prettier-ignore-end -->
+### Investors
 
-## Licenses
+* initOS
+* Firma Casper Francke
+* WilldooIT
+* Camptocamp
+* Madsack Media Store
+* OpenIndustry.it
+* Asphalt Zipper
+* Access Windows and Doors Inc
+* BIG Consulting GmbH
+* Ursainfosystems
+* IT IS AG
 
-This repository is licensed under [AGPL-3.0](LICENSE).
+Maintainer
+----------
 
-However, each module can have a totally different license, as long as they adhere to OCA
-policy. Consult each module's `__manifest__.py` file, which contains a `license` key
-that explains its license.
+[![Pledra Logo](https://www.pledra.com/logo.png)](https://www.pledra.com/)
 
-----
-
-OCA, or the [Odoo Community Association](http://odoo-community.org/), is a nonprofit
-organization whose mission is to support the collaborative development of Odoo features
-and promote its widespread use.

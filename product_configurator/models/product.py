@@ -1,12 +1,10 @@
-import logging
-from io import StringIO
-
-from mako.runtime import Context
-from mako.template import Template
-
-from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo import models, fields, api, _
+from mako.template import Template
+from mako.runtime import Context
 from odoo.tools.safe_eval import safe_eval
+from io import StringIO
+import logging
 
 _logger = logging.getLogger(__name__)
 
@@ -70,7 +68,10 @@ class ProductTemplate(models.Model):
             ]
             if len(set(attr_val_line_vals)) != len(attr_val_line_vals):
                 raise ValidationError(
-                    _("You cannot have a duplicate configuration for the " "same value")
+                    _(
+                        "You cannot have a duplicate configuration for the "
+                        "same value"
+                    )
                 )
 
     config_ok = fields.Boolean(string="Can be Configured")
@@ -119,7 +120,7 @@ class ProductTemplate(models.Model):
     # product-template so that no need of compute and inverse on this
     weight = fields.Float(
         compute="_compute_weight",
-        inverse="_set_weight",  # pylint: disable=C8110
+        inverse="_set_weight",
         search="_search_weight",
         store=False,
     )
@@ -147,8 +148,12 @@ class ProductTemplate(models.Model):
 
     def get_product_attribute_values_action(self):
         self.ensure_one()
-        action = self.env.ref("product.product_attribute_value_action").read()[0]
-        value_ids = self.attribute_line_ids.mapped("product_template_value_ids").ids
+        action = self.env.ref("product.product_attribute_value_action").read()[
+            0
+        ]
+        value_ids = self.attribute_line_ids.mapped(
+            "product_template_value_ids"
+        ).ids
         action["domain"] = [("id", "in", value_ids)]
         context = safe_eval(action["context"], {"active_id": self.id})
         context.update({"active_id": self.id})
@@ -194,8 +199,8 @@ class ProductTemplate(models.Model):
             record.config_ok = not record.config_ok
 
     def _create_variant_ids(self):
-        """Prevent configurable products from creating variants as these serve
-        only as a template for the product configurator"""
+        """ Prevent configurable products from creating variants as these serve
+            only as a template for the product configurator"""
         templates = self.filtered(lambda t: not t.config_ok)
         if not templates:
             return None
@@ -205,7 +210,9 @@ class ProductTemplate(models.Model):
         """- Prevent the removal of configurable product templates
             from variants
         - Patch for check access rights of user(configurable products)"""
-        configurable_templates = self.filtered(lambda template: template.config_ok)
+        configurable_templates = self.filtered(
+            lambda template: template.config_ok
+        )
         if configurable_templates:
             configurable_templates[:1].check_config_user_access()
         for config_template in configurable_templates:
@@ -243,7 +250,9 @@ class ProductTemplate(models.Model):
             )
             if not new_attribute_line_id:
                 continue
-            config_line_default.update({"attribute_line_id": new_attribute_line_id})
+            config_line_default.update(
+                {"attribute_line_id": new_attribute_line_id}
+            )
             line.copy(config_line_default)
 
         # Config steps
@@ -264,9 +273,9 @@ class ProductTemplate(models.Model):
     def configure_product(self):
         """launches a product configurator wizard with a linked
         template in order to configure new product."""
-        return self.with_context(product_tmpl_id_readonly=True).create_config_wizard(
-            click_next=False
-        )
+        return self.with_context(
+            product_tmpl_id_readonly=True
+        ).create_config_wizard(click_next=False)
 
     def create_config_wizard(
         self,
@@ -314,11 +323,7 @@ class ProductTemplate(models.Model):
         )
         user_root = self.env.ref("base.user_root")
         user_admin = self.env.ref("base.user_admin")
-        if (
-            config_manager
-            or self.env.user.id in [user_root.id, user_admin.id]
-            or self.env.su
-        ):
+        if config_manager or self.env.user.id in [user_root.id, user_admin.id] or self.env.su:
             return True
         raise ValidationError(
             _(
@@ -338,7 +343,9 @@ class ProductTemplate(models.Model):
     def write(self, vals):
         """Patch for check access rights of user(configurable products)"""
         change_config_ok = "config_ok" in vals
-        configurable_templates = self.filtered(lambda template: template.config_ok)
+        configurable_templates = self.filtered(
+            lambda template: template.config_ok
+        )
         if change_config_ok or configurable_templates:
             self[:1].check_config_user_access()
 
@@ -372,7 +379,8 @@ class ProductTemplate(models.Model):
             )
             error_message += (
                 invalid_value_ids
-                and _("\nValue/s: %s\n") % (", ".join(invalid_value_ids.mapped("name")))
+                and _("\nValue/s: %s\n")
+                % (", ".join(invalid_value_ids.mapped("name")))
                 or ""
             )
         if error_message:
@@ -460,7 +468,9 @@ class ProductProduct(models.Model):
     def _compute_product_weight_extra(self):
         for product in self:
             product.weight_extra = sum(
-                product.mapped("product_template_attribute_value_ids.weight_extra")
+                product.mapped(
+                    "product_template_attribute_value_ids.weight_extra"
+                )
             )
 
     def _compute_product_weight(self):
@@ -479,7 +489,7 @@ class ProductProduct(models.Model):
         self.weight_dummy = self.weight
 
     config_name = fields.Char(
-        string="Configuration Name", compute="_compute_config_name"
+        string="Name", size=256, compute="_compute_config_name"
     )
     weight_extra = fields.Float(
         string="Weight Extra", compute="_compute_product_weight_extra"
@@ -497,17 +507,21 @@ class ProductProduct(models.Model):
 
     def get_product_attribute_values_action(self):
         self.ensure_one()
-        action = self.env.ref("product.product_attribute_value_action").read()[0]
+        action = self.env.ref("product.product_attribute_value_action").read()[
+            0
+        ]
         value_ids = self.product_template_attribute_value_ids.ids
         action["domain"] = [("id", "in", value_ids)]
-        context = safe_eval(action["context"], {"active_id": self.product_tmpl_id.id})
+        context = safe_eval(
+            action["context"], {"active_id": self.product_tmpl_id.id}
+        )
         context.update({"active_id": self.product_tmpl_id.id})
         action["context"] = context
         return action
 
     def _compute_config_name(self):
-        """Compute the name of the configurable products and use template
-        name for others"""
+        """ Compute the name of the configurable products and use template
+            name for others"""
         for product in self:
             if product.config_ok:
                 product.config_name = product._get_config_name()
@@ -564,32 +578,68 @@ class ProductProduct(models.Model):
 
     @api.model
     def create(self, vals):
-        """Patch for check access rights of user(configurable products)"""
+        """Patch for check access rights of user(configurable products)
+        """
         config_ok = vals.get("config_ok", False)
         if config_ok:
             self.check_config_user_access(mode="create")
         return super(ProductProduct, self).create(vals)
 
     def write(self, vals):
-        """Patch for check access rights of user(configurable products)"""
+        """Patch for check access rights of user(configurable products)
+        """
         change_config_ok = "config_ok" in vals
-        configurable_products = self.filtered(lambda product: product.config_ok)
+        configurable_products = self.filtered(
+            lambda product: product.config_ok
+        )
         if change_config_ok or configurable_products:
             self[:1].check_config_user_access(mode="write")
 
         return super(ProductProduct, self).write(vals)
 
-    def _compute_product_price_extra(self):
-        standard_products = self.filtered(lambda product: not product.config_ok)
-        config_products = self - standard_products
+    def get_products_with_session(self, config_session_map=None):
+        products_to_update = self.env['product.product']
+        if not config_session_map:
+            return products_to_update
+        config_session_products = self.filtered(lambda p: p.config_ok)
+        for cfg_product in config_session_products:
+            if cfg_product.id not in config_session_map.keys():
+                continue
+            product_session = self.env['product.config.session'].browse(
+                config_session_map.get(cfg_product.id)
+            )
+            if (not product_session.exists() or
+                    product_session.product_id != cfg_product):
+                continue
+            products_to_update += cfg_product
+        return products_to_update
+
+    @api.depends_context('product_sessions')
+    def _compute_product_price(self):
+        session_map = self.env.context.get('product_sessions', ())
+        if isinstance(session_map, tuple):
+            session_map = dict(session_map)
+        config_session_products = self.get_products_with_session(
+            session_map.copy()
+        )
+        standard_products = self - config_session_products
+        for cfg_product in config_session_products:
+            product_session = self.env['product.config.session'].browse(
+                session_map.get(cfg_product.id)
+            )
+            cfg_product.price = product_session.price
+        super(ProductProduct, standard_products)._compute_product_price()
+
+    def price_compute(self, price_type,
+                      uom=False, currency=False, company=False):
+        standard_products = self.filtered(lambda a: not a.config_ok)
+        res = {}
         if standard_products:
-            super(ProductProduct, standard_products)._compute_product_price_extra()
-        for product in config_products:
-            attribute_value_obj = self.env["product.attribute.value"]
-            value_ids = (
-                product.product_template_attribute_value_ids.product_attribute_value_id
+            res = super(ProductProduct, standard_products).price_compute(
+                price_type, uom=uom,
+                currency=currency, company=company
             )
-            extra_prices = attribute_value_obj.get_attribute_value_extra_prices(
-                product_tmpl_id=product.product_tmpl_id.id, pt_attr_value_ids=value_ids
-            )
-            product.price_extra = sum(extra_prices.values())
+        config_products = self - standard_products
+        for config_product in config_products:
+            res[config_product.id] = config_product.price
+        return res

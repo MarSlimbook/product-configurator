@@ -1,6 +1,4 @@
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class PurchaseOrder(models.Model):
@@ -35,7 +33,7 @@ class PurchaseOrderLine(models.Model):
     )
 
     def reconfigure_product(self):
-        """Creates and launches a product configurator wizard with a linked
+        """ Creates and launches a product configurator wizard with a linked
         template and variant in order to re-configure a existing product. It is
         esetially a shortcut to pre-fill configuration data of a variant"""
         wizard_model = "product.configurator.purchase"
@@ -53,10 +51,3 @@ class PurchaseOrderLine(models.Model):
         return self.product_id.product_tmpl_id.create_config_wizard(
             model_name=wizard_model, extra_vals=extra_vals
         )
-
-    @api.onchange("product_qty", "product_uom")
-    def _onchange_quantity(self):
-        res = super(PurchaseOrderLine, self)._onchange_quantity()
-        if self.config_ok and self.config_session_id:
-            self.price_unit = self.config_session_id.price
-        return res
